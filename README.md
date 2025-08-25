@@ -2,26 +2,70 @@
 
 A zsh plugin that defines an interactive file/directory navigator using fzf. Offers multiple navigation modes, git integration, and customizable actions.
 
-## Features
+## Usage
 
-- **Multiple Navigation Modes**:
-  - File and directory browsing with toggling between types
-  - Text search within files using ripgrep
-  - Git repository management with status checking
-  - Bookmark integration with yazi file manager
+### Examples
 
-- **Rich Git Integration**:
-  - List git repositories
-  - Show repository status with modified files count
-  - Git fetch operations across multiple repos
-  - Launch lazygit for detailed git operations
+1. **Basic file navigation**:
+  - Search for a file/directory.
+  - Press Enter to cd to the directory/file's parent and open it with `$FZF_NAV_OPEN`.
 
-- **Flexible Actions**:
-  - Navigate to directories (with or without opening files)
-  - Open files in your configured editor
-  - Launch files in detached terminal sessions
-  - Preview files with syntax highlighting
-  - Copy selections to clipboard
+![search](https://github.com/user-attachments/assets/970711a1-5b0a-495e-bdaf-522741577bbf)
+
+2. **Quick edits with custom open script**:
+  - Create a custom mode in your .zshrc:
+    ```
+    function nav-edit() {
+      printf 'nvim $1 +$2' > '/tmp/edit.sh'
+      chmod +x /tmp/edit.sh
+      FZF_NAV_USER_OPEN='/tmp/edit.sh' _fzf-nav
+    }
+    ```
+  - Run `nav-edit`
+  - Press Ctrl+R to switch to grep mode.
+  - Type your search term.
+  - Press Ctrl+U to open a file in the editor at the highlighted line.
+  - Exiting the editor will return you to the fzf-nav menu so you can edit another search result.
+
+![nav-edit](https://github.com/user-attachments/assets/ac7e62ad-7c24-46b8-952f-9a14b34340f5)
+
+3. **Git repository management**:
+  - Press Ctrl+G to switch to git mode.
+  - Press Ctrl+G again to see repositories with modifications.
+  - Press Ctrl+U on a repository to open lazygit (with config above).
+
+![git-mode](https://github.com/user-attachments/assets/5c8e8c0d-1a2c-4283-b928-6e22869bb911)
+
+4. **Bookmark navigation**:
+  - Press Ctrl+T to show yazi bookmarks (with config above).
+  - Press Enter on a bookmark to cd to it and open yazi.
+
+### Navigation Modes
+
+The plugin supports several modes that you can switch between:
+
+- **Search Mode** (default): Shows all files and directories.
+- **Files Mode**: Shows only files.
+- **Directories Mode**: Shows only directories.
+- **Grep Mode**: Search within file contents.
+- **Git Mode**: List git repositories.
+- **Status Mode**: List git repositories with unclean status.
+- **Fetch Mode**: List git repositories with unclean status after fetch (slow).
+- **User Mode**: User-defined mode.
+
+### Key Bindings
+
+#### Mode Switching:
+- `Ctrl+F`: Cycle through Search → Directories → Files.
+- `Ctrl+R`: Switch to Grep mode.
+- `Ctrl+G`: Cycle through Git → Status → Fetch modes.
+- `Ctrl+T`: Switch to User mode (`fzf-nav-mode-user`).
+
+#### Actions:
+- `Enter`: Change to directory and open selections. Exits fzf.
+- `Ctrl+O`: Open selection without changing directory and exiting.
+- `Ctrl+U`: Open selection with user-defined command without exiting.
+- `Ctrl+D`: Open selection in a detached terminal.
 
 ## Installation
 
@@ -76,11 +120,10 @@ zle -N fzf-nav
 bindkey '^I' fzf-nav # Tab
 ```
 
-## Configuration
+### Configuration
 
 Some functions and variables need to be defined for the plugin to function.
 I recommend you paste and modify the configs below in your .zshrc.
-
 ### Environment Variables
 
 ```bash
@@ -195,62 +238,29 @@ default-preview {
 
 ```
 
-## Usage
+### Look
 
-### Navigation Modes
+The menu does not set any look and theme options and will use those in `FZF_DEFAULT_OPTS`. For the gifs above I used:
 
-The plugin supports several modes that you can switch between:
-
-- **Search Mode** (default): Shows all files and directories.
-- **Files Mode**: Shows only files.
-- **Directories Mode**: Shows only directories.
-- **Grep Mode**: Search within file contents.
-- **Git Mode**: List git repositories.
-- **Status Mode**: List git repositories with unclean status.
-- **Fetch Mode**: List git repositories with unclean status after fetch (slow).
-- **User Mode**: User-defined mode.
-
-### Key Bindings
-
-#### Mode Switching:
-- `Ctrl+F`: Cycle through Search → Directories → Files.
-- `Ctrl+R`: Switch to Grep mode.
-- `Ctrl+G`: Cycle through Git → Status → Fetch modes.
-- `Ctrl+T`: Switch to User mode (`fzf-nav-mode-user`).
-
-#### Actions:
-- `Enter`: Change to directory and open selections. Exits fzf.
-- `Ctrl+O`: Open selection without changing directory and exiting.
-- `Ctrl+U`: Open selection with user-defined command without exiting.
-- `Ctrl+D`: Open selection in a detached terminal.
-
-### Examples
-
-1. **Quick file navigation**:
-  - Search for a file/directory.
-  - Press Enter to cd to the directory/file's parent and open it with `$FZF_NAV_OPEN`.
-
-2. **Quick edits within files**:
-  - Create a custom mode in your .zshrc:
-    ```
-    function nav-edit() {
-      printf 'nvim $1 +$2' > '/tmp/edit.sh'
-      chmod +x /tmp/edit.sh
-      FZF_NAV_USER_OPEN='/tmp/edit.sh' _fzf-nav
-    }
-    ```
-  - Run `nav-edit`
-  - Press Ctrl+R to switch to grep mode.
-  - Type your search term.
-  - Press Ctrl+U to open a file in the editor at the highlighted line.
-  - Exiting the editor will return you to the fzf-nav menu so you can edit another search result.
-
-3. **Git repository management**:
-  - Press Ctrl+G to switch to git mode.
-  - Press Ctrl+G again to see repositories with modifications.
-  - Press Ctrl+U on a repository to open lazygit (with config above).
-
-4. **Bookmark navigation**:
-  - Press Ctrl+T to show yazi bookmarks (with config above).
-  - Press Enter on a bookmark to cd to it and open yazi.
-
+```bash
+export FZF_DEFAULT_OPTS="\ 
+--ansi \
+--height=100% \
+--input-border=bottom \
+--header-border=bottom \
+--pointer='█' \
+--marker='█' \
+--input-label-pos='0:top' \
+--info=inline-right \
+--preview-window='right:50%:border-left:wrap:<60(down:60%:border-top:wrap)' \
+--tiebreak='begin,length' \
+--tabstop=2 \
+--reverse \
+--bind='change:top' \
+--bind='tab:toggle-out' \
+--bind='ctrl-t:toggle-all' \
+--bind='ctrl-s:jump' \
+--bind='ctrl-y:execute-silent:wl-copy {}' \
+--bind='ctrl-\\:toggle-preview' \
+"
+```
