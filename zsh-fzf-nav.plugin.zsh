@@ -53,9 +53,9 @@ function _fzf-nav {
     --bind="ctrl-r:change-input-label( 󱎸 Grep )+reload:rg ${FZF_NAV_RG_OPTS[*]} --field-match-separator=${_FZF_NAV_SEPARATOR} {q}" \
     --bind="ctrl-g:transform:$_FZF_NAV_MODE_GIT" \
     --bind="ctrl-t:change-input-label( 󰺄 User )+reload:$FZF_NAV_USER_MODE" \
-    --bind="ctrl-o:execute:$FZF_NAV_OPEN {1}" \
-    --bind="ctrl-d:execute:$_FZF_NAV_SCRIPTS/detach.zsh $FZF_NAV_TERMCMD $FZF_NAV_OPEN {1}" \
-    --bind="ctrl-u:execute:$FZF_NAV_USER_OPEN {1} {2}" \
+    --bind="ctrl-o:execute:$_FZF_NAV_SCRIPTS/open.zsh $FZF_NAV_OPEN {1}" \
+    --bind="ctrl-d:execute:$_FZF_NAV_SCRIPTS/detach.zsh $FZF_NAV_TERMCMD $_FZF_NAV_SCRIPTS/open.zsh $FZF_NAV_OPEN {1}" \
+    --bind="ctrl-u:execute:$_FZF_NAV_SCRIPTS/open.zsh $FZF_NAV_USER_OPEN {1} {2}" \
     --bind="enter:become:$_FZF_NAV_SCRIPTS/become.zsh {1} {2} \"$_FZF_NAV_BECOME_TMP\""
 
   if [[ -f "$_FZF_NAV_BECOME_TMP" ]]; then

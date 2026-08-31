@@ -1,7 +1,8 @@
 #!/usr/bin/env zsh
 
 term="$1"
-open="$2"
-file=$(printf "%q" $3)
+runner="$2"
+open="$3"
+file="$4"
 
-"$term" -e zsh -ic "$open $file $4" &>/dev/null & disown
+"$term" -e "$runner" "$open" "$file" "$5" &>/dev/null & disown
